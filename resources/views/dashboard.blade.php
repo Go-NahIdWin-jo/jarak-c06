@@ -1,23 +1,17 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Dashboard — JARAK')
-
-@section('content')
-
-    <h1>Dashboard</h1>
-    <p class="text-muted">Logged in as {{ auth()->user()->name }} ({{ auth()->user()->role }})</p>
-
-    <div class="d-flex gap-2 mb-4">
-        <a href="{{ route('lists.index') }}" class="btn btn-primary">My lists</a>
-
-        @if (auth()->user()->role === 'admin')
-            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">Manage users</a>
-        @endif
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
+        </div>
     </div>
-
-    <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
-    </form>
-
-@endsection
+</x-app-layout>

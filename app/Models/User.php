@@ -39,4 +39,20 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(TaskList::class, 'list_user', 'user_id', 'list_id');
     }
+
+    /**
+     * Cek apakah user memiliki peran admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Cek apakah user memiliki peran user biasa.
+     */
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
 }
