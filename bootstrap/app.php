@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // SimulateAuth dari Programmer 3 (hanya untuk dev lokal)
-        if (app()->environment('local')) {
+        if (env('APP_ENV') === 'local') {
             $middleware->web(append: [
                 \App\Http\Middleware\SimulateAuth::class,
             ]);

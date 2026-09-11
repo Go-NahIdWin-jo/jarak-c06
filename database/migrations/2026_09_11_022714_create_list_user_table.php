@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('list_id')->constrained('lists')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->enum('role', ['viewer', 'member', 'owner'])->default('member');
             $table->timestamps();
             $table->unique(['list_id', 'user_id']);
         });
