@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-<<<<<<< HEAD
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
@@ -54,29 +53,6 @@ class DatabaseSeeder extends Seeder
             'deadline' => now()->addDays(2),
             'priority' => 'medium',
             'is_completed' => true,
-=======
-        // Akun Admin
-        User::create([
-            'name' => 'Admin Jarak',
-            'email' => 'admin@jarak.test',
-            'password' => 'password123', // auto-hashed via cast 'password' => 'hashed'
-            'role' => 'admin',
-        ]);
-
-        // Akun User Biasa
-        User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'budi@jarak.test',
-            'password' => 'password123',
-            'role' => 'user',
-        ]);
-
-        User::create([
-            'name' => 'Siti Rahma',
-            'email' => 'siti@jarak.test',
-            'password' => 'password123',
-            'role' => 'user',
->>>>>>> feature/auth-user-management
         ]);
     }
 }
