@@ -1,53 +1,65 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Dashboard
+            </h2>
+            <a href="{{ route('progress.dashboard') }}" class="text-sm text-blue-600 hover:underline font-medium">
+                📊 Lihat Progress Tracking →
+            </a>
+        </div>
+    </x-slot>
 
-@section('content')
-    <h2>Dashboard - Progress Tracking</h2>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-    <h3>My Lists</h3>
-    @if($myLists->isEmpty())
-        <p>You don't have any lists yet.</p>
-    @else
-        @foreach($myLists as $list)
-            <div class="card">
-                <h4>{{ $list->name }} (Owner: You)</h4>
-                <p>Tasks: {{ $list->tasks->where('is_completed', true)->count() }} / {{ $list->tasks->count() }} completed</p>
-                
-                @php $progress = $list->progressPercentage(); @endphp
-                <div class="progress-bar-container">
-                    <div class="progress-bar" 
-                         style="width: {{ $progress }}%; background-color: {{ $progress < 30 ? '#dc3545' : ($progress < 70 ? '#ffc107' : '#28a745') }};">
-                        {{ $progress }}%
-                    </div>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Upcoming tasks</h3>
+                    <a href="{{ route('lists.index') }}" class="text-sm text-blue-600 hover:underline">View all lists</a>
                 </div>
 
-                <div style="margin-top: 1rem;">
-                    <a href="{{ route('collaborators.index', $list->id) }}" class="btn btn-primary">Manage Collaborators</a>
-                </div>
+                @if ($upcomingTasks->isEmpty())
+                    <p class="text-gray-500">No upcoming tasks. <a href="{{ route('lists.index') }}" class="text-blue-600 hover:underline">Create a list</a> to get started.</p>
+                @else
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b text-sm text-gray-500">
+                                <th class="text-left py-2">Task</th>
+                                <th class="text-left py-2">List</th>
+                                <th class="text-left py-2">Deadline</th>
+                                <th class="text-left py-2">Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($upcomingTasks as $task)
+                                <tr class="border-b">
+                                    <td class="py-2">{{ $task->title }}</td>
+                                    <td class="py-2">{{ $task->list->name }}</td>
+                                    <td class="py-2">{{ $task->deadline?->format('M j, Y') ?? '—' }}</td>
+                                    <td class="py-2">
+                                        <span @class([
+                                            'px-2 py-0.5 rounded text-xs font-medium',
+                                            'bg-red-100 text-red-700' => $task->priority === 'high',
+                                            'bg-yellow-100 text-yellow-700' => $task->priority === 'medium',
+                                            'bg-gray-100 text-gray-700' => $task->priority === 'low',
+                                        ])>
+                                            {{ ucfirst($task->priority) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
-        @endforeach
-    @endif
 
-    <h3 style="margin-top: 2rem;">Shared With Me</h3>
-    @if($sharedLists->isEmpty())
-        <p>No lists shared with you.</p>
-    @else
-        @foreach($sharedLists as $list)
-            <div class="card">
-                <h4>{{ $list->name }} (Owner: {{ $list->owner->name }})</h4>
-                <p>Tasks: {{ $list->tasks->where('is_completed', true)->count() }} / {{ $list->tasks->count() }} completed</p>
-                
-                @php $progress = $list->progressPercentage(); @endphp
-                <div class="progress-bar-container">
-                    <div class="progress-bar" 
-                         style="width: {{ $progress }}%; background-color: {{ $progress < 30 ? '#dc3545' : ($progress < 70 ? '#ffc107' : '#28a745') }};">
-                        {{ $progress }}%
-                    </div>
+            @if (auth()->user()->role === 'admin')
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:underline">Manage users</a>
                 </div>
+            @endif
 
-                <div style="margin-top: 1rem;">
-                    <a href="{{ route('collaborators.index', $list->id) }}" class="btn btn-primary">View Collaborators</a>
-                </div>
-            </div>
-        @endforeach
-    @endif
-@endsection
+        </div>
+    </div>
+</x-app-layout>

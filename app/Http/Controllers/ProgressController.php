@@ -19,6 +19,6 @@ class ProgressController extends Controller
             $query->where('user_id', $userId);
         })->with('tasks', 'owner')->get();
 
-        return view('dashboard', compact('myLists', 'sharedLists'));
+        return view('progress.dashboard', compact('myLists', 'sharedLists'));
     }
 }
