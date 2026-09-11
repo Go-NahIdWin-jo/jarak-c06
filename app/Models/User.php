@@ -30,11 +30,21 @@ class User extends Authenticatable
         ];
     }
 
+    // List yang dimiliki user (sebagai pemilik)
     public function lists()
     {
-        return $this->hasMany(TaskList::class);
+        return $this->hasMany(TaskList::class, 'user_id');
     }
 
+    // List yang diikuti sebagai kolaborator dengan pivot role (Programmer 3 - SRS-7)
+    public function sharedLists()
+    {
+        return $this->belongsToMany(TaskList::class, 'list_user', 'user_id', 'list_id')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    // Alias tanpa pivot (Programmer 2)
     public function joinedLists()
     {
         return $this->belongsToMany(TaskList::class, 'list_user', 'user_id', 'list_id');

@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Dashboard
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Dashboard
+            </h2>
+            <a href="{{ route('progress.dashboard') }}" class="text-sm text-blue-600 hover:underline font-medium">
+                📊 Lihat Progress Tracking →
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">

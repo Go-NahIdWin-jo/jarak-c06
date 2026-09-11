@@ -12,9 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Admin middleware dari Programmer 1
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        // SimulateAuth dari Programmer 3 (hanya untuk dev lokal)
+        if (app()->environment('local')) {
+            $middleware->web(append: [
+                \App\Http\Middleware\SimulateAuth::class,
+            ]);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

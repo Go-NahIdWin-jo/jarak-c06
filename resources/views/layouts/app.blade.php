@@ -13,6 +13,12 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Extra styles untuk fitur progress bar Programmer 3 -->
+        <style>
+            .progress-bar-container { width: 100%; background-color: #e5e7eb; border-radius: 9999px; margin-top: 8px; overflow: hidden; }
+            .progress-bar { height: 16px; line-height: 16px; color: white; text-align: center; font-size: 11px; font-weight: bold; transition: width 0.4s ease; }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
