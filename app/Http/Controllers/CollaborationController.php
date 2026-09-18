@@ -6,27 +6,51 @@ use App\Models\TaskList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+
+
 
 class CollaborationController extends Controller
 {
+    // guard level owner
+    private function authorizeOwner(Tasklist $list, string $message): void
+    {
+	if($list->user_id !== Auth:id()){
+	    abort(403,$message);
+	}
+    }
+
+    // guard level member
+    private function authorizeMember(Tasklist $list, string $message): void
+    {
+	$isOwner = $list->user_id === Auth::id();
+	$isCollaborator = $list->collaborators->contains('id',Auth::id());
+
+	if(! $isOwner && ! $isCollaborator){
+	    abort(403,'Unauthorized action.');
+	}
+    }
+
     public function index($listId)
     {
         $list = TaskList::with('collaborators')->findOrFail($listId);
-        
-        // Cek apakah user yang login punya akses (owner atau collaborator)
-        $isOwner = $list->user_id === Auth::id();
-        $isCollaborator = $list->collaborators->contains(Auth::id());
-        
-        if (!$isOwner && !$isCollaborator) {
-            abort(403, 'Unauthorized action.');
-        }
 
-        // Ambil semua user selain owner dan yang sudah join untuk dropdown invite
+        $this->authorizeMember($list);
+
+        $isOwner = $list->user_id === Auth::id();
+
+        // F1: owner kini ikut tercatat di pivot list_user,
+        // jadi kita keluarkan dari daftar members agar tidak tampil dobel.
+        $members = $list->collaborators->where('id', '!=', $list->user_id);
+
+        // Kandidat undangan: semua user kecuali owner & yang sudah jadi kolaborator
         $availableUsers = User::where('id', '!=', $list->user_id)
             ->whereNotIn('id', $list->collaborators->pluck('id'))
+            ->orderBy('name')
             ->get();
 
-        return view('collaborators.index', compact('list', 'availableUsers', 'isOwner'));
+        return view('collaborators.index', compact('list', 'members', 'availableUsers', 'isOwner'));
     }
 
     public function invite(Request $request, $listId)
