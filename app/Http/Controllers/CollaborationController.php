@@ -56,20 +56,38 @@ class CollaborationController extends Controller
     public function invite(Request $request, $listId)
     {
         $list = TaskList::findOrFail($listId);
-        
-        // Hanya owner yang boleh invite
-        if ($list->user_id !== Auth::id()) {
-            abort(403, 'Hanya pemilik list yang dapat mengundang kolaborator.');
-        }
 
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|in:owner,member'
+        // F4 — hanya owner yang boleh mengundang
+        $this->authorizeOwner($list, 'Hanya pemilik list yang dapat mengundang kolaborator.');
+
+        // F3/F5 — validasi sekaligus cegah duplikat sebelum menyentuh DB
+        $validated = $request->validate([
+            'user_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
+                Rule::notIn([$list->user_id]),
+                Rule::unique('list_user', 'user_id')->where(function ($query) use ($list) {
+                    return $query->where('list_id', $list->id);
+                }),
+            ],
+            'role' => ['required', Rule::in(['viewer', 'member', 'owner'])],
+        ], [
+            'user_id.not_in'  => 'Pemilik list otomatis menjadi kolaborator dan tidak perlu diundang.',
+            'user_id.unique'  => 'User tersebut sudah menjadi kolaborator pada list ini.',
+            'role.in'         => 'Role tidak valid.',
         ]);
 
-        $list->collaborators()->attach($request->user_id, ['role' => $request->role]);
+        // F3 — Database Transaction
+        DB::transaction(function () use ($list, $validated) {
+            $list->collaborators()->syncWithoutDetaching([
+                $validated['user_id'] => ['role' => $validated['role']],
+            ]);
+        });
 
-        return redirect()->back()->with('success', 'Kolaborator berhasil ditambahkan.');
+        return redirect()
+            ->route('collaborators.index', $list->id)
+            ->with('success', 'Kolaborator berhasil ditambahkan.');
     }
 
     public function remove($listId, $userId)
