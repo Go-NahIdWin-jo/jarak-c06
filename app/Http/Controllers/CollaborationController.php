@@ -93,19 +93,23 @@ class CollaborationController extends Controller
     public function remove($listId, $userId)
     {
         $list = TaskList::findOrFail($listId);
-        
-        // Hanya owner yang boleh remove
-        if ($list->user_id !== Auth::id()) {
-            abort(403, 'Hanya pemilik list yang dapat menghapus kolaborator.');
-        }
 
-        // Tidak bisa hapus diri sendiri (karena dia ownernya)
-        if ($list->user_id == $userId) {
+        // F4 — hanya owner yang boleh menghapus kolaborator
+        $this->authorizeOwner($list, 'Hanya pemilik list yang dapat menghapus kolaborator.');
+
+        // Owner tidak boleh dilepas dari listnya sendiri
+        if ((int) $list->user_id === (int) $userId) {
             return redirect()->back()->with('error', 'Pemilik list tidak dapat dihapus.');
         }
 
-        $list->collaborators()->detach($userId);
+        // F3 — Database Transaction
+        $detached = DB::transaction(function () use ($list, $userId) {
+            return $list->collaborators()->detach($userId);
+        });
+
+        if ($detached === 0) {
+            return redirect()->back()->with('error', 'User tersebut bukan kolaborator pada list ini.');
+        }
 
         return redirect()->back()->with('success', 'Kolaborator berhasil dihapus.');
     }
-}
