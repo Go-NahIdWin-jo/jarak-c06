@@ -53,4 +53,15 @@ class TaskList extends Model
         $completed = $this->tasks()->where('is_completed', true)->count();
         return round(($completed / $total) * 100);
     }
+
+    protected static function boot()
+    {
+        // apparently it's needed for something
+        parent::boot();
+
+        static::deleting(function (TaskList $list) {
+            $list->tasks()->delete();
+            $list->collaborators()->detach();
+        });
+    }
 }
