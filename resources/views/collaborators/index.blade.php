@@ -16,6 +16,17 @@
             @endif
             @if(session('error'))
                 <div class="bg-red-100 text-red-800 p-4 rounded-lg">{{ session('error') }}</div>
+
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-100 text-red-800 p-4 rounded-lg">
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <!-- Members Table -->
@@ -38,7 +49,7 @@
                             <td class="py-2"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">Owner</span></td>
                             <td class="py-2">-</td>
                         </tr>
-                        @foreach($list->collaborators as $collab)
+                        @foreach($members as $collab)
                             <tr class="border-b">
                                 <td class="py-2">{{ $collab->name }}</td>
                                 <td class="py-2">{{ $collab->email }}</td>
@@ -77,6 +88,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Role:</label>
                             <select name="role" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2">
                                 <option value="member">Member</option>
+                                <option value="viewer">Viewer</option>
                                 <option value="owner">Owner (Co-owner)</option>
                             </select>
                         </div>
