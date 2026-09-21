@@ -17,12 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
 
-        // SimulateAuth dari Programmer 3 (hanya untuk dev lokal)
-        if (env('APP_ENV') === 'local') {
-            $middleware->web(append: [
-                \App\Http\Middleware\SimulateAuth::class,
-            ]);
-        }
+        // SimulateAuth dari Programmer 3 dinonaktifkan karena menyebabkan
+        // auto-login yang membuat halaman login tidak bisa diakses dan logout tidak berfungsi.
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

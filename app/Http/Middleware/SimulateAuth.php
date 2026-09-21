@@ -11,6 +11,11 @@ class SimulateAuth
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Jangan auto-login di rute autentikasi atau admin agar user bisa login/logout normal
+        if ($request->is('login', 'register', 'forgot-password', 'reset-password', 'admin*', 'logout')) {
+            return $next($request);
+        }
+
         if (app()->environment('local') && !Auth::check()) {
             // Login as the first user automatically for testing
             // (John Doe, ID = 2 since ID 1 is admin)

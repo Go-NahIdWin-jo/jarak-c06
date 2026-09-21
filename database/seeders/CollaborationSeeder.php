@@ -18,6 +18,7 @@ class CollaborationSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         $user1 = User::create([
@@ -25,6 +26,7 @@ class CollaborationSeeder extends Seeder
             'email' => 'john@example.com',
             'password' => Hash::make('password'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         $user2 = User::create([
@@ -32,6 +34,7 @@ class CollaborationSeeder extends Seeder
             'email' => 'jane@example.com',
             'password' => Hash::make('password'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         $user3 = User::create([
@@ -39,6 +42,7 @@ class CollaborationSeeder extends Seeder
             'email' => 'bob@example.com',
             'password' => Hash::make('password'),
             'role' => 'user',
+            'email_verified_at' => now(),
         ]);
 
         // Create lists

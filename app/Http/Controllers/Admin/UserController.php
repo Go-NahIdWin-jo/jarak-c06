@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -22,7 +23,7 @@ class UserController extends Controller
         return view('admin.users.create');
     }
 
-    // Simpan user baru
+    // Simpan user baru (Task 1.1)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -33,12 +34,15 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        User::create($validated);
+
+        DB::transaction(function () use ($validated) {
+            User::create($validated);
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
 
-    // Hapus user
+    // Hapus user (Task 1.2)
     public function destroy(User $user)
     {
         // Cegah admin hapus akunnya sendiri
@@ -46,7 +50,10 @@ class UserController extends Controller
             return back()->with('error', 'Tidak bisa menghapus akun sendiri.');
         }
 
-        $user->delete();
+        DB::transaction(function () use ($user) {
+            $user->delete();
+        });
+
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 }
